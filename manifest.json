@@ -1,0 +1,16 @@
+{
+  "name": "持仓跟踪",
+  "short_name": "持仓跟踪",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f5fc",
+  "theme_color": "#f2f5fc",
+  "icons": [
+    {
+      "src": "icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
