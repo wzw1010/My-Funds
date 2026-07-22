@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" href="icon-1024.png" />
     <meta name="theme-color" content="#f2f5fa" />
     <style>
-        /* ===== 完整样式（已压缩主卡片高度 1/4，基金间距减半） ===== */
         :root {
             --radius-md: 20px;
             --radius-sm: 12px;
@@ -31,15 +30,14 @@
             --color-edit-bg: #f8fafc;
             --shadow-card: 0 4px 16px rgba(0,0,0,0.08);
             --shadow-summary: 0 6px 24px rgba(0,0,0,0.12);
-            --decor-actual: #0b1a33;
-            --decor-estimate: #8aabb8;
+            --decor-today: #0b1a33;
+            --decor-old: #b8c8d8;
             --decor-empty: transparent;
         }
         * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
         html,body { width:100%; min-height:100vh; background:var(--color-bg); display:flex; justify-content:center; padding:4px; overflow-x:hidden; }
         .app-container { max-width:480px; width:100%; background:#ffffff; border-radius:var(--radius-md); box-shadow:0 8px 32px rgba(0,0,0,0.05); padding:14px 14px 20px; display:flex; flex-direction:column; align-self:flex-start; gap:14px; }
 
-        /* ----- 主卡片压缩 1/4 ----- */
         .summary-card { background:linear-gradient(145deg,var(--color-primary),var(--color-primary-light)); border-radius:var(--radius-md); padding:10px 14px 8px 14px; color:white; flex-shrink:0; box-shadow:var(--shadow-summary); }
         .summary-today { display:flex; flex-direction:column; align-items:center; margin-bottom:6px; }
         .summary-today .today-label { font-size:13px; font-weight:500; opacity:0.7; letter-spacing:0.3px; display:flex; align-items:center; gap:6px; }
@@ -62,7 +60,6 @@
         .stat-number.neutral { color:var(--color-text-light); }
         .data-timestamp { font-size:10px; opacity:0.5; text-align:center; margin-top:4px; letter-spacing:0.3px; }
 
-        /* ----- 基金列表：间距减半 ----- */
         .fund-list { display:flex; flex-direction:column; gap:5px; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
         .fund-list::-webkit-scrollbar { width:3px; }
         .fund-list::-webkit-scrollbar-track { background:transparent; }
@@ -71,8 +68,8 @@
         .fund-card { background:var(--color-card-bg); border-radius:var(--radius-md); padding:10px 14px 12px 14px; border:1px solid var(--color-border); box-shadow:var(--shadow-card); display:flex; flex-direction:column; gap:8px; flex-shrink:0; transition:box-shadow 0.2s,border-color 0.3s; position:relative; overflow:hidden; }
         .fund-card:active { box-shadow:0 2px 8px rgba(0,0,0,0.04); background:#fafcff; }
         .fund-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:0; transition:background 0.4s ease,opacity 0.3s; }
-        .fund-card.decor-actual::before { background:var(--decor-actual); }
-        .fund-card.decor-estimate::before { background:var(--decor-estimate); }
+        .fund-card.decor-today::before { background:var(--decor-today); }
+        .fund-card.decor-old::before { background:var(--decor-old); }
         .fund-card.decor-empty::before { background:var(--decor-empty); border-left:2px dashed #ccc; opacity:0.4; }
         .fund-card.flash-update { animation:flashCard 0.6s ease; }
         @keyframes flashCard { 0% { background:#f0f7ff; } 50% { background:#e0edf9; } 100% { background:var(--color-card-bg); } }
@@ -216,7 +213,7 @@
     <div class="app-container" id="app">
         <section class="summary-card" id="summaryCard">
             <div class="summary-today">
-                <span class="today-label" id="todayLabel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> 今日盈亏</span>
+                <span class="today-label" id="todayLabel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> 最新盈亏</span>
                 <span class="today-value" id="todayProfitBig">+0.00</span>
             </div>
             <hr class="summary-divider" />
@@ -225,7 +222,7 @@
                 <div class="summary-stat-item"><div class="stat-label-wrap"><span class="stat-label">持有收益</span></div><div class="stat-number neutral" id="totalProfit">+0.00</div></div>
                 <div class="summary-stat-item"><div class="stat-label-wrap"><span class="stat-label">总收益率</span></div><div class="stat-number neutral" id="totalReturn">0.00%</div></div>
             </div>
-            <div class="data-timestamp" id="dataTimestamp">数据时间：--</div>
+            <div class="data-timestamp" id="dataTimestamp">净值日期：--</div>
         </section>
 
         <div class="fund-list" id="fundList"><div class="empty-state"><i class="fas fa-inbox"></i><p>还没有持仓基金</p><div class="sub">点击底部「添加持仓」</div></div></div>
@@ -233,7 +230,7 @@
             <div class="action-btn" id="openAddModalBtn"><div class="icon-wrap"><i class="fas fa-plus-circle"></i></div><span class="label">添加持仓</span></div>
             <div class="action-btn" id="batchEditBtn"><div class="icon-wrap"><i class="fas fa-pen"></i></div><span class="label">批量编辑</span></div>
             <div class="action-btn" id="openBackupModalBtn"><div class="icon-wrap"><i class="fas fa-database"></i></div><span class="label">数据管理</span></div>
-            <div class="action-btn hide-in-edit" id="refreshBtn"><div class="icon-wrap"><i class="fas fa-sync-alt"></i></div><span class="label">刷新数据</span></div>
+            <div class="action-btn hide-in-edit" id="refreshBtn"><div class="icon-wrap"><i class="fas fa-sync-alt"></i></div><span class="label">刷新净值</span></div>
         </div>
     </div>
 
@@ -278,11 +275,7 @@
 
     <script>
         // ================================================================
-        // 持仓跟踪 - 完整重构版（含数据退休机制）
-        // 核心原则：
-        // 1. 交易时间内显示估值，净值公布后显示净值
-        // 2. 数据有效截止到下一个交易日 9:00，过期作废
-        // 3. 永不展示过时数据，宁可显示“无数据”
+        // 持仓跟踪 - 仅净值版（无估值）
         // ================================================================
 
         const STORAGE_H = 'fund_holdings';
@@ -305,23 +298,6 @@
             return true;
         }
 
-        function getMarketPhase() {
-            const now = new Date();
-            if (!isTradingDay(now)) return 'CLOSED';
-            const totalMin = now.getHours() * 60 + now.getMinutes();
-            if (totalMin >= 555 && totalMin < 570) return 'AUCTION';
-            if (totalMin >= 570 && totalMin < 690) return 'OPENING';
-            if (totalMin >= 690 && totalMin < 780) return 'LUNCH';
-            if (totalMin >= 780 && totalMin < 900) return 'OPENING';
-            return 'SETTLEMENT';
-        }
-
-        function getValidName(name, code) {
-            if (name && typeof name === 'string' && name.trim().length >= 2) return name.trim();
-            return code;
-        }
-
-        // ---------- 数据退休机制 ----------
         function getNextTradingDay(date) {
             const d = new Date(date);
             d.setDate(d.getDate() + 1);
@@ -335,13 +311,16 @@
             if (!dataDate) return false;
             const now = new Date();
             const today = getToday();
-            if (dataDate === today) return true; // 今天的数据永远有效（直到今天结束）
-            // 找到数据日期的下一个交易日
+            if (dataDate === today) return true;
             const nextTrading = getNextTradingDay(new Date(dataDate));
             const expireTime = new Date(nextTrading);
             expireTime.setHours(9, 0, 0, 0);
-            // 当前时间必须小于到期时间
             return now < expireTime;
+        }
+
+        function getValidName(name, code) {
+            if (name && typeof name === 'string' && name.trim().length >= 2) return name.trim();
+            return code;
         }
 
         // ---------- 缓存读写 ----------
@@ -360,59 +339,6 @@
             }
         }
         loadData();
-
-        // ---------- 天天基金估值接口 (JSONP) ----------
-        let jsonpCounter = 0;
-        const jsonpRequests = {};
-
-        function fetchSingle(code, retries = 2) {
-            return new Promise((resolve, reject) => {
-                const reqId = 'r-' + code + '-' + (jsonpCounter++) + '-' + Date.now();
-                let attempt = (rem) => {
-                    const sid = 'jp-' + reqId;
-                    let s = document.getElementById(sid);
-                    if (s) s.remove();
-                    const s2 = document.createElement('script');
-                    s2.id = sid;
-                    s2.src = 'https://fundgz.1234567.com.cn/js/' + code + '.js?rt=' + Date.now();
-                    const tid = setTimeout(() => {
-                        cleanup();
-                        if (rem > 0) attempt(rem - 1);
-                        else reject(new Error('请求超时'));
-                    }, 8000);
-                    window._jsonpCB = window._jsonpCB || {};
-                    window._jsonpCB[reqId] = (data) => {
-                        cleanup();
-                        resolve(data);
-                    };
-                    function cleanup() {
-                        clearTimeout(tid);
-                        if (s2.parentNode) s2.remove();
-                        delete window._jsonpCB[reqId];
-                        delete jsonpRequests[reqId];
-                    }
-                    s2.onerror = () => {
-                        cleanup();
-                        if (rem > 0) attempt(rem - 1);
-                        else reject(new Error('网络请求失败'));
-                    };
-                    jsonpRequests[reqId] = { cleanup };
-                    document.head.appendChild(s2);
-                };
-                attempt(retries);
-            });
-        }
-
-        window.jsonpgz = function(d) {
-            if (d && d.fundcode && window._jsonpCB) {
-                for (const k in window._jsonpCB) {
-                    if (k.indexOf(d.fundcode) !== -1) {
-                        window._jsonpCB[k](d);
-                        break;
-                    }
-                }
-            }
-        };
 
         // ---------- 腾讯证券净值接口 ----------
         function fetchTencent(code) {
@@ -462,134 +388,44 @@
             };
         }
 
-        // ---------- 核心数据获取（重构版） ----------
+        // ---------- 核心数据获取（仅净值） ----------
         async function fetchFundDataOnly(code) {
-            const today = getToday();
-            const cache = fundDataCache[code] || {};
-            const phase = getMarketPhase();
-            const isTodayTrading = isTradingDay(new Date());
-
-            // ----- 非交易日：只拿最近官方净值，不碰估值 -----
-            if (!isTodayTrading) {
-                // 先尝试从腾讯获取最新净值（可能返回最近交易日）
-                try {
-                    const qt = await fetchTencent(code);
-                    if (qt && qt.dwjz > 0) {
-                        const name = getValidName(qt.name, code);
-                        // 直接写入，不校验日期（非交易日无条件接受）
-                        fundDataCache[code] = {
-                            name,
-                            nav: qt.dwjz,
-                            rate: qt.gszzl,
-                            dataDate: qt.jzrq,
-                            source: 'actual',
-                            updateDate: today,
-                            actualNav: String(qt.dwjz),
-                            actualRate: qt.gszzl,
-                            actualDate: qt.jzrq,
-                            gsz: qt.dwjz,
-                            gszzl: qt.gszzl
-                        };
-                        saveAll();
-                        return { nav: qt.dwjz, rate: qt.gszzl, source: 'actual', date: qt.jzrq };
-                    }
-                } catch (e) {}
-                // 腾讯失败，用缓存中的actual
-                if (cache.actualNav && cache.actualDate) {
-                    if (isDataValid(cache.actualDate)) {
-                        return { nav: parseFloat(cache.actualNav), rate: parseFloat(cache.actualRate) || 0, source: 'actual', date: cache.actualDate };
-                    }
-                }
-                return null;
-            }
-
-            // ----- 交易日 -----
-            // 1. 如果缓存中已有今天的实际净值，直接返回
-            if (cache.actualDate === today && cache.actualNav) {
-                return { nav: parseFloat(cache.actualNav), rate: parseFloat(cache.actualRate) || 0, source: 'actual', date: today };
-            }
-
-            // 2. 优先请求天天基金今日估值
-            try {
-                const tt = await fetchSingle(code);
-                if (tt && tt.gsz !== undefined && tt.gsz !== null) {
-                    const name = getValidName(tt.name, code);
-                    fundDataCache[code] = {
-                        ...cache,
-                        name,
-                        nav: parseFloat(tt.gsz),
-                        rate: parseFloat(tt.gszzl) || 0,
-                        dataDate: today,
-                        source: 'estimate',
-                        updateDate: today,
-                        gsz: parseFloat(tt.gsz),
-                        gszzl: parseFloat(tt.gszzl) || 0,
-                        actualNav: cache.actualNav || '',
-                        actualRate: cache.actualRate || '',
-                        actualDate: cache.actualDate || ''
-                    };
-                    saveAll();
-                    return { nav: parseFloat(tt.gsz), rate: parseFloat(tt.gszzl) || 0, source: 'estimate', date: today };
-                }
-            } catch (e) {}
-
-            // 3. 估值失败，尝试腾讯获取今日官方净值（可能已公布）
             try {
                 const qt = await fetchTencent(code);
-                if (qt && qt.dwjz > 0 && qt.jzrq === today) {
+                if (qt && qt.dwjz > 0) {
                     const name = getValidName(qt.name, code);
                     fundDataCache[code] = {
                         name,
                         nav: qt.dwjz,
                         rate: qt.gszzl,
-                        dataDate: today,
-                        source: 'actual',
-                        updateDate: today,
-                        actualNav: String(qt.dwjz),
-                        actualRate: qt.gszzl,
-                        actualDate: qt.jzrq,
-                        gsz: qt.dwjz,
-                        gszzl: qt.gszzl
+                        date: qt.jzrq,
+                        updateDate: getToday()
                     };
                     saveAll();
-                    return { nav: qt.dwjz, rate: qt.gszzl, source: 'actual', date: today };
+                    return { nav: qt.dwjz, rate: qt.gszzl, date: qt.jzrq };
                 }
-            } catch (e) {}
-
-            // 4. 兜底：返回最近有效数据（但必须经过退休校验）
-            if (cache.actualNav && cache.actualDate && isDataValid(cache.actualDate)) {
-                return { nav: parseFloat(cache.actualNav), rate: parseFloat(cache.actualRate) || 0, source: 'actual', date: cache.actualDate };
+            } catch (e) {
+                // 接口失败，尝试从缓存读取
             }
-            if (cache.nav && cache.dataDate && isDataValid(cache.dataDate)) {
-                return { nav: parseFloat(cache.nav), rate: parseFloat(cache.rate) || 0, source: cache.source || 'historical', date: cache.dataDate };
+
+            const cache = fundDataCache[code];
+            if (cache && cache.nav && cache.date && isDataValid(cache.date)) {
+                return { nav: cache.nav, rate: cache.rate || 0, date: cache.date };
             }
             return null;
         }
 
-        // ---------- 数据显示逻辑（读取缓存 + 退休校验） ----------
+        // ---------- 数据显示 ----------
         function getDisplayData(code) {
-            const cache = fundDataCache[code] || {};
-            if (cache.nav && cache.dataDate && cache.source) {
-                if (isDataValid(cache.dataDate)) {
-                    return {
-                        nav: parseFloat(cache.nav),
-                        rate: parseFloat(cache.rate) || 0,
-                        source: cache.source,
-                        date: cache.dataDate
-                    };
-                }
+            const cache = fundDataCache[code];
+            if (cache && cache.nav && cache.date && isDataValid(cache.date)) {
+                return {
+                    nav: cache.nav,
+                    rate: cache.rate || 0,
+                    date: cache.date
+                };
             }
-            if (cache.actualNav && cache.actualDate) {
-                if (isDataValid(cache.actualDate)) {
-                    return {
-                        nav: parseFloat(cache.actualNav),
-                        rate: parseFloat(cache.actualRate) || 0,
-                        source: 'actual',
-                        date: cache.actualDate
-                    };
-                }
-            }
-            return { nav: 0, rate: 0, source: 'zero', date: '' };
+            return { nav: 0, rate: 0, date: '' };
         }
 
         // ---------- 批量更新 ----------
@@ -602,8 +438,8 @@
         // ---------- 计算摘要 ----------
         function computeSummary() {
             const codes = Object.keys(holdings);
-            if (!codes.length) return { totalAsset: 0, todayProfit: 0, totalProfit: 0, totalYield: 0, allActual: false };
-            let totalCost = 0, totalMV = 0, todayProfit = 0, allActual = true;
+            if (!codes.length) return { totalAsset: 0, todayProfit: 0, totalProfit: 0, totalYield: 0 };
+            let totalCost = 0, totalMV = 0, todayProfit = 0;
             codes.forEach(code => {
                 const h = holdings[code];
                 const cost = parseFloat(h.cost) || 0;
@@ -615,11 +451,10 @@
                 const prev = rate !== 0 ? nav / (1 + rate / 100) : nav;
                 totalMV += nav * shares;
                 todayProfit += (nav - prev) * shares;
-                if (display.source !== 'actual') allActual = false;
             });
             const totalProfit = totalMV - totalCost;
             const totalYield = totalCost > 0 ? (totalProfit / totalCost * 100) : 0;
-            return { totalAsset: totalMV, todayProfit, totalProfit, totalYield, allActual };
+            return { totalAsset: totalMV, todayProfit, totalProfit, totalYield };
         }
 
         // ---------- 渲染函数 ----------
@@ -634,65 +469,39 @@
             if (!codes.length) {
                 todayEl.textContent = '+0.00';
                 todayEl.className = 'today-value neutral';
-                labelEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> 今日盈亏';
+                labelEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> 最新盈亏';
                 document.getElementById('totalAssets').textContent = '0.00';
                 document.getElementById('totalAssets').className = 'stat-number neutral';
                 document.getElementById('totalProfit').textContent = '+0.00';
                 document.getElementById('totalProfit').className = 'stat-number neutral';
                 document.getElementById('totalReturn').textContent = '0.00%';
                 document.getElementById('totalReturn').className = 'stat-number neutral';
-                tsEl.textContent = '数据时间：--';
+                tsEl.textContent = '净值日期：--';
                 return;
             }
 
-            let allActual = true, hasEstimate = false, hasZero = false;
-            let latestDate = '';
-            let latestSource = '';
+            let latestDate = '', hasValid = false;
             codes.forEach(code => {
                 const display = getDisplayData(code);
-                if (display.source === 'zero') { hasZero = true; allActual = false; }
-                else if (display.source === 'estimate') { hasEstimate = true; allActual = false; }
-                else if (display.source !== 'actual') { allActual = false; }
-                if (display.date && display.date > latestDate) {
-                    latestDate = display.date;
-                    latestSource = display.source;
+                if (display.date && display.nav > 0) {
+                    hasValid = true;
+                    if (display.date > latestDate) latestDate = display.date;
                 }
             });
 
             const val = s.todayProfit;
-            if (hasZero && !latestDate) {
+            if (!hasValid) {
                 todayEl.textContent = '--';
                 todayEl.className = 'today-value neutral';
                 labelEl.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> 数据更新中...';
-                tsEl.textContent = '数据时间：--';
+                tsEl.textContent = '净值日期：--';
             } else {
                 todayEl.textContent = (val >= 0 ? '+' : '') + val.toFixed(2);
                 todayEl.className = 'today-value ' + (val > 0 ? 'positive' : val < 0 ? 'negative' : 'neutral');
-                
                 const today = getToday();
-                let labelText = '';
-                if (latestDate === today) {
-                    if (latestSource === 'actual') labelText = '今日实际盈亏';
-                    else if (latestSource === 'estimate') labelText = '今日预估盈亏';
-                    else labelText = '今日盈亏（陈旧）';
-                } else {
-                    if (latestSource === 'actual') labelText = `最新盈亏（截至 ${latestDate}）`;
-                    else if (latestSource === 'estimate') labelText = `预估盈亏（${latestDate}）`;
-                    else labelText = `历史盈亏（${latestDate}）`;
-                }
+                let labelText = latestDate === today ? '今日盈亏' : `最新盈亏（${latestDate}）`;
                 labelEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg> ${labelText}`;
-
-                if (latestDate) {
-                    const dateObj = new Date(latestDate);
-                    const displayDate = `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')}`;
-                    if (latestDate === today) {
-                        tsEl.textContent = `数据日期：今天（${latestSource === 'actual' ? '实际' : latestSource === 'estimate' ? '预估' : '历史'}）`;
-                    } else {
-                        tsEl.textContent = `数据日期：${displayDate}（${latestSource === 'actual' ? '实际' : latestSource === 'estimate' ? '预估' : '历史'}）`;
-                    }
-                } else {
-                    tsEl.textContent = '数据时间：--';
-                }
+                tsEl.textContent = `净值日期：${latestDate}`;
             }
 
             function setStat(id, val, isPct) {
@@ -723,6 +532,7 @@
                 return mvB - mvA;
             });
 
+            const today = getToday();
             let html = '';
             sorted.forEach(code => {
                 const h = holdings[code];
@@ -742,14 +552,19 @@
                 if (!name || name === code) name = h.name || code;
                 const displayName = name.length > 11 ? name.slice(0, 11) + '…' : name;
 
-                let decorClass = '';
-                if (display.source === 'actual') decorClass = 'decor-actual';
-                else if (display.source === 'estimate') decorClass = 'decor-estimate';
-                else decorClass = 'decor-empty';
+                // 装饰条状态：今日净值 → 深色；上交易日（有效期内）→ 浅灰色；无数据 → 虚线
+                let decorClass = 'decor-empty';
+                if (display.date && display.nav > 0) {
+                    if (display.date === today) {
+                        decorClass = 'decor-today';
+                    } else if (isDataValid(display.date)) {
+                        decorClass = 'decor-old';
+                    }
+                }
 
                 const metrics = [
-                    { label: '日收益率', value: todayProfitRate, pct: true },
-                    { label: '日盈亏', value: todayProfit, pct: false },
+                    { label: '最新收益率', value: todayProfitRate, pct: true },
+                    { label: '最新盈亏', value: todayProfit, pct: false },
                     { label: '持有收益率', value: holdReturn, pct: true },
                     { label: '持有盈亏', value: holdProfit, pct: false }
                 ];
@@ -958,7 +773,7 @@
             codeInput.oninput = function() {
                 const code = this.value.trim();
                 if (code.length === 6 && !isNaN(code)) {
-                    fetchSingle(code, 1).then(data => {
+                    fetchTencent(code).then(data => {
                         if (data && data.name) {
                             fetchName = data.name;
                             infoText.textContent = '已识别：' + data.name;
@@ -990,7 +805,7 @@
                 let name = fetchName;
                 if (!name) {
                     try {
-                        const d = await fetchSingle(code, 1);
+                        const d = await fetchTencent(code);
                         if (d && d.name) name = d.name;
                     } catch (e) {}
                 }
@@ -1190,14 +1005,7 @@
             setupBackup();
             registerSW();
 
-            setInterval(() => {
-                const p = getMarketPhase();
-                if (p === 'OPENING' || p === 'AUCTION' || p === 'LUNCH') {
-                    refreshData();
-                }
-            }, 60000);
-
-            console.log('✅ 完整重构版：含数据退休机制，交易日优先估值，净值公布后自动切换。');
+            console.log('✅ 仅净值版：数据源为腾讯官方净值。');
         });
     </script>
 </body>
